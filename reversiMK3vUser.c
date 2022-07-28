@@ -43,6 +43,7 @@ void printBoard(char board[][26], int n) {
         }
         printf("\n");
     }
+    printf("\n");
 }
 
 bool positionInBounds(int n, int row, int col) {
@@ -62,12 +63,12 @@ char oppositeColour(char colour){
 
 void gameOverHelper(char computer, int Bcount, int Wcount){
     if(computer=='B'){
-        printf("D.A.N.I.S.H. - %c: %d Pieces\n",computer,Bcount);
-        printf("TA Program/Opponent - %c: %d Pieces\n",oppositeColour(computer),Wcount);
+        printf("MiniMax - %c: %d Pieces\n",computer,Bcount);
+        printf("Other Program/Opponent - %c: %d Pieces\n",oppositeColour(computer),Wcount);
     }
     else if(computer=='W'){
-        printf("D.A.N.I.S.H. - %c: %d Pieces\n",computer,Wcount);
-        printf("TA Program/Opponent - %c: %d Pieces\n",oppositeColour(computer),Bcount);
+        printf("MiniMax - %c: %d Pieces\n",computer,Wcount);
+        printf("Other Program/Opponent - %c: %d Pieces\n",oppositeColour(computer),Bcount);
     }
 }
 
@@ -100,7 +101,7 @@ bool gameOver(char board[][26],int n, bool invalid_player_move,char computer, bo
     else if(Ucount==0 && Bcount>Wcount){
         // Indicate who is who
         if(notificationOn==true){
-            printf("B player wins!!\n");
+            printf("\nB player wins!!\n");
             gameOverHelper(computer,Bcount,Wcount); 
         }   
         return true;
@@ -108,14 +109,14 @@ bool gameOver(char board[][26],int n, bool invalid_player_move,char computer, bo
     else if(Ucount==0 && Wcount>Bcount){
         // Indicate who is who
         if(notificationOn==true){
-            printf("W player wins!!\n");
+            printf("\nW player wins!!\n");
             gameOverHelper(computer,Bcount,Wcount);
         }
         return true;
     }
     else if(Ucount == 0 && Wcount==Bcount){
         if(notificationOn==true){
-            printf("Draw!!\n");
+            printf("\nDraw!!\n");
             // Indicate who is who
             gameOverHelper(computer,Bcount,Wcount);    
         }
@@ -532,7 +533,7 @@ float miniMaxAI(char board[][26],int depth,char originalTurn, char currentTurn, 
 
 // Part 6: Function for running the game
 
-void runGame(char DANISH){
+void runGame(char DANISH,int depth){
     // Temporarily blocking print statements
     char board[26][26];
     int n = 8;
@@ -558,14 +559,14 @@ void runGame(char DANISH){
             int row,col;
             // Check if there is valid move
             float score;
-            score=miniMaxAI(board,5,computer,computer,&row,&col,n);
+            score=miniMaxAI(board,depth,computer,computer,&row,&col,n);
             if(doesComputerHaveMoves!=0){
                 PlacePiece(board,n,row,col,computer);
-                printf("DANISH places %c at %c%c. SCORE: %lf\n",turn,'a'+row,'a'+col,score);
+                printf("MiniMax places %c at %c%c. SCORE: %lf\n",turn,'a'+row,'a'+col,score);
                 printBoard(board,n); 
             }
             else{
-                printf("DANISH has no valid move.\n");
+                printf("Minimax has no valid move.\n");
             }
             
         }
@@ -592,5 +593,20 @@ int main(void){
     char input[2];
     scanf("%s",input);
     char computer = input[0];
-    runGame(computer);
+
+    printf("\nThere are three difficulties the computer plays at:\n 1 - Easy \n 2 - Medium \n 3 - Hard\n\n");
+    int difficulty;
+    do{
+        printf("Enter your difficulty: ");
+        scanf("%d",&difficulty);
+    }while(difficulty>3 || difficulty<1);
+
+    printf("\nYou chose %d/3 as your difficulty and the computer plays as %c.\n\n",difficulty,computer);
+
+    int depth;
+    if(difficulty == 1) depth = 3;
+    else if(difficulty == 2) depth = 4;
+    else if(difficulty==3) depth = 5;
+
+    runGame(computer,depth);
 }
